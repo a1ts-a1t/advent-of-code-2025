@@ -1,6 +1,5 @@
 use crate::day2::common::{inputs, number_of_digits};
 
-
 fn next_invalid(value: u64) -> u64 {
     // workaround for log stuff not playing nice with 0
     // lol, wgaf
@@ -24,7 +23,7 @@ fn next_invalid(value: u64) -> u64 {
     let base_base = base * u64::pow(10, nod / 2) + base;
 
     if base_base > value {
-        return base_base
+        return base_base;
     }
 
     // if the given number is already ge that,
@@ -47,5 +46,5 @@ pub fn part1() {
         }
     }
 
-    println!("Part 1 answer: {}", total);
+    print!("Part 1 answer: {}", total);
 }

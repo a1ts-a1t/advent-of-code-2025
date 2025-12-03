@@ -12,7 +12,7 @@ fn divisors(value: u32) -> Vec<u32> {
             low.push(i);
             high.push(value / i);
         }
-    };
+    }
 
     low.reverse();
     high.append(&mut low);
@@ -48,9 +48,9 @@ fn is_invalid(value: u64) -> bool {
         if repeat_digits(base, nod / divisor) == value {
             return true;
         }
-    };
+    }
 
-    return false;
+    false
 }
 
 pub fn part2() {
@@ -63,7 +63,7 @@ pub fn part2() {
         }
     }
 
-    println!("Part 2 answer: {}", total);
+    print!("Part 2 answer: {}", total);
 }
 
 #[cfg(test)]

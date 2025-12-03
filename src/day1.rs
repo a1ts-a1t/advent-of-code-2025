@@ -50,7 +50,7 @@ pub fn part1() {
         }
     }
 
-    println!("Part 1 answer: {}", zero_count);
+    print!("Part 1 answer: {}", zero_count);
 }
 
 pub fn part2() {
@@ -96,5 +96,5 @@ pub fn part2() {
         current_position = position.rem_euclid(100);
     }
 
-    println!("Part 2 answer: {}", zero_count);
+    print!("Part 2 answer: {}", zero_count);
 }

@@ -9,12 +9,9 @@ fn string_to_range(s: &str) -> RangeInclusive<u64> {
 
 pub fn inputs() -> Vec<RangeInclusive<u64>> {
     let body = read_to_string("inputs/day2.txt").unwrap();
-    body.split(',')
-        .map(string_to_range)
-        .collect()
+    body.split(',').map(string_to_range).collect()
 }
 
 pub fn number_of_digits(value: u64) -> u32 {
     value.ilog10() + 1
 }
-
