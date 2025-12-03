@@ -1,6 +1,7 @@
 use structopt::StructOpt;
 
 mod day1;
+mod day2;
 
 #[derive(StructOpt, Debug)]
 struct Opt {
@@ -14,7 +15,11 @@ fn main() {
         1 => {
             day1::part1();
             day1::part2();
-        }
+        },
+        2 => {
+            day2::part1();
+            day2::part2();
+        },
         _ => eprintln!("Invalid day."),
     }
 }
