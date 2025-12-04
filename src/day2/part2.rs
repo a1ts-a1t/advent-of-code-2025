@@ -8,7 +8,7 @@ fn divisors(value: u32) -> Vec<u32> {
     let mut low: Vec<u32> = vec![];
     let mut high: Vec<u32> = vec![];
     for i in 1..=((value as f64).sqrt().floor() as u32) {
-        if value % i == 0 {
+        if value.is_multiple_of(i) {
             low.push(i);
             high.push(value / i);
         }
