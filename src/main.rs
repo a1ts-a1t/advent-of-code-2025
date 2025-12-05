@@ -5,6 +5,7 @@ use structopt::StructOpt;
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 
 // https://stackoverflow.com/questions/71515747/what-is-the-easiest-way-to-time-a-function-call-for-testing-purposes
 fn timeit<F: Fn()>(f: F) {
@@ -35,6 +36,10 @@ fn main() {
         3 => {
             timeit(day3::part1);
             timeit(day3::part2);
+        }
+        4 => {
+            timeit(day4::part1);
+            timeit(day4::part2);
         }
         _ => eprintln!("Invalid day."),
     }
