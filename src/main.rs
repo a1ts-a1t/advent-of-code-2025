@@ -6,6 +6,7 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 
 // https://stackoverflow.com/questions/71515747/what-is-the-easiest-way-to-time-a-function-call-for-testing-purposes
 fn timeit<F: Fn()>(f: F) {
@@ -40,6 +41,10 @@ fn main() {
         4 => {
             timeit(day4::part1);
             timeit(day4::part2);
+        }
+        5 => {
+            timeit(day5::part1);
+            timeit(day5::part2);
         }
         _ => eprintln!("Invalid day."),
     }
