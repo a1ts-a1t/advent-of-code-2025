@@ -5,12 +5,9 @@
 // but w/e
 // this code is also just generally a mess
 
-use std::hash::Hash;
 use std::{
     collections::{BinaryHeap, HashMap, HashSet},
     fs::read_to_string,
-    hash::Hasher,
-    rc::Rc,
 };
 
 use itertools::Itertools;
@@ -76,45 +73,6 @@ impl From<Vec<(usize, &Vec3)>> for PointPair {
     }
 }
 
-#[derive(Clone, Debug)]
-struct Cluster(Rc<HashSet<usize>>);
-
-impl Cluster {
-    fn new(set: &HashSet<usize>) -> Self {
-        Cluster(Rc::new(set.clone()))
-    }
-
-    fn merge(cluster_x: Option<Cluster>, cluster_y: Option<Cluster>) -> HashSet<usize> {
-        match (cluster_x, cluster_y) {
-            (None, None) => HashSet::new(),
-            (None, Some(y)) => y.0.as_ref().clone(),
-            (Some(x), None) => x.0.as_ref().clone(),
-            (Some(x), Some(y)) => HashSet::union(&x.0, &y.0).cloned().collect(),
-        }
-    }
-
-    fn len(&self) -> usize {
-        self.0.len()
-    }
-}
-
-impl PartialEq for Cluster {
-    fn eq(&self, other: &Self) -> bool {
-        Rc::ptr_eq(&self.0, &other.0)
-    }
-}
-
-impl Eq for Cluster {}
-
-impl Hash for Cluster {
-    fn hash<H>(&self, hasher: &mut H)
-    where
-        H: Hasher,
-    {
-        hasher.write_usize(Rc::as_ptr(&self.0) as usize);
-    }
-}
-
 pub fn part1() {
     let body = read_to_string("inputs/day8.txt").unwrap();
     let point_pairs = body
@@ -129,25 +87,43 @@ pub fn part1() {
         heap.push(point_pair);
     }
 
-    let mut cluster_map: HashMap<usize, Cluster> = HashMap::new();
+    let mut clusters: Vec<HashSet<usize>> = Vec::new();
+    let mut cluster_map: HashMap<usize, usize> = HashMap::new();
     for _ in 0..1000 {
         let point_pair = heap.pop().unwrap();
         let cluster_x = cluster_map.remove(&point_pair.idx);
         let cluster_y = cluster_map.remove(&point_pair.idy);
 
-        let mut merged = Cluster::merge(cluster_x, cluster_y);
-        merged.extend(vec![point_pair.idx, point_pair.idy]);
+        let cluster = match (cluster_x, cluster_y) {
+            (None, None) => {
+                clusters.push(HashSet::from_iter(vec![point_pair.idx, point_pair.idy]));
+                clusters.len() - 1
+            }
+            (None, Some(y)) => {
+                clusters.get_mut(y).unwrap().insert(point_pair.idx);
+                y
+            }
+            (Some(x), None) => {
+                clusters.get_mut(x).unwrap().insert(point_pair.idy);
+                x
+            }
+            (Some(x), Some(y)) => {
+                if x != y {
+                    let [cluster_x, cluster_y] = clusters.get_disjoint_mut([x, y]).unwrap();
+                    cluster_x.extend(cluster_y.drain());
+                };
+                x
+            }
+        };
 
-        let cluster = Cluster::new(&merged);
-        for idx in merged {
-            cluster_map.insert(idx, cluster.clone());
+        for idx in clusters.get(cluster).unwrap() {
+            cluster_map.insert(*idx, cluster);
         }
     }
 
-    let product = cluster_map
-        .values()
-        .unique()
-        .map(Cluster::len)
+    let product = clusters
+        .into_iter()
+        .map(|s| s.len())
         .k_largest(3)
         .product::<usize>();
 
@@ -165,16 +141,36 @@ pub fn part2() {
         heap.push(point_pair);
     }
 
-    let mut cluster_map: HashMap<usize, Cluster> = HashMap::new();
+    let mut clusters: Vec<HashSet<usize>> = Vec::new();
+    let mut cluster_map: HashMap<usize, usize> = HashMap::new();
     loop {
         let point_pair = heap.pop().unwrap();
         let cluster_x = cluster_map.remove(&point_pair.idx);
         let cluster_y = cluster_map.remove(&point_pair.idy);
 
-        let mut merged = Cluster::merge(cluster_x, cluster_y);
-        merged.extend(vec![point_pair.idx, point_pair.idy]);
+        let cluster = match (cluster_x, cluster_y) {
+            (None, None) => {
+                clusters.push(HashSet::from_iter(vec![point_pair.idx, point_pair.idy]));
+                clusters.len() - 1
+            }
+            (None, Some(y)) => {
+                clusters.get_mut(y).unwrap().insert(point_pair.idx);
+                y
+            }
+            (Some(x), None) => {
+                clusters.get_mut(x).unwrap().insert(point_pair.idy);
+                x
+            }
+            (Some(x), Some(y)) => {
+                if x != y {
+                    let [cluster_x, cluster_y] = clusters.get_disjoint_mut([x, y]).unwrap();
+                    cluster_x.extend(cluster_y.drain());
+                };
+                x
+            }
+        };
 
-        if merged.len() == vecs.len() {
+        if clusters.get(cluster).unwrap().len() == vecs.len() {
             let x = vecs.get(point_pair.idx).unwrap();
             let y = vecs.get(point_pair.idy).unwrap();
             let product = x.0 * y.0;
@@ -182,9 +178,8 @@ pub fn part2() {
             return;
         }
 
-        let cluster = Cluster::new(&merged);
-        for idx in merged {
-            cluster_map.insert(idx, cluster.clone());
+        for idx in clusters.get(cluster).unwrap() {
+            cluster_map.insert(*idx, cluster);
         }
     }
 }
