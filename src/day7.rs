@@ -107,8 +107,5 @@ pub fn part2() {
         manifold_row.apply_timelines(&mut timelines);
     }
 
-    print!(
-        "Part 2 answer: {}",
-        timelines.values().sum::<u64>()
-    );
+    print!("Part 2 answer: {}", timelines.values().sum::<u64>());
 }
